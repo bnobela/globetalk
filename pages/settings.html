@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GlobeTalk - Settings & Safety</title>
+    <link rel="stylesheet" href="../src/frontend/styles/settings.css" />
+  </head>
+
+  <body>
+    <!-- Navbar -->
+    <header>
+      <div class="logo">GlobeTalk</div>
+      <nav>
+        <ul>
+          <li><a href="../pages/userdashboard.html">Home</a></li>
+          <li><a href="findPal.html">Find Pen Pal</a></li>
+          <li><a href="settings.html" class="active">Settings & Safety</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <section class="settings">
+      <div class="settings-header">
+        <h1>Settings and Safety</h1>
+      </div>
+
+      <div class="settings-box">
+        <div class="user-info">
+          <p><strong id="username">Loading...</strong></p>
+        </div>
+        <hr />
+
+        <h3>Profile Information</h3>
+        <form id="settingsForm">
+          <!-- Profile Information -->
+          <label class="language">Language Preferences:</label>
+          <select id="language" name="language">
+            <option value="">Select your language</option>
+            <option value="Arabic">Arabic</option>
+            <option value="Asturian">Asturian</option>
+            <option value="Belarusian">Belarusian</option>
+            <option value="Breton">Breton</option>
+            <option value="Catalan">Catalan</option>
+            <option value="Chinese">Chinese</option>
+            <option value="Crimean Tatar">Crimean Tatar</option>
+            <option value="Danish">Danish</option>
+            <option value="Dutch">Dutch</option>
+            <option value="English">English</option>
+            <option value="Esperanto">Esperanto</option>
+            <option value="French">French</option>
+            <option value="Galician">Galician</option>
+            <option value="German">German</option>
+            <option value="Greek">Greek</option>
+            <option value="Irish">Irish</option>
+            <option value="Italian">Italian</option>
+            <option value="Japanese">Japanese</option>
+            <option value="Khmer">Khmer</option>
+            <option value="Norwegian">Norwegian</option>
+            <option value="Persian">Persian</option>
+            <option value="Polish">Polish</option>
+            <option value="Portuguese">Portuguese</option>
+            <option value="Romanian">Romanian</option>
+            <option value="Russian">Russian</option>
+            <option value="Simple German">Simple German</option>
+            <option value="Slovak">Slovak</option>
+            <option value="Slovenian">Slovenian</option>
+            <option value="Spanish">Spanish</option>
+            <option value="Swedish">Swedish</option>
+            <option value="Tagalog">Tagalog</option>
+            <option value="Tamil">Tamil</option>
+          </select>
+
+          <label for="Region/timezone">Region/Time Zone:</label>
+          <select id="timezone" name="timezone">
+            <option value="">Select your Region/Time Zone</option>
+            <option value="USA(GMT-4)">USA(GMT-4)</option>
+            <option value="SA(GMT+2)">SA(GMT+2)</option>
+            <option value="UK(GMT+1)">UK(GMT+1)</option>
+            <option value="India(GMT+5:30)">India(GMT+5:30)</option>
+          </select>
+
+          <hr />
+          <h3>Personal Info</h3>
+
+          <label for="ageRange">Age Range:</label>
+          <select id="ageRange">
+            <option value="">Select your age range</option>
+            <option value="18-24">18-24</option>
+            <option value="25-34">25-34</option>
+            <option value="35-44">35-44</option>
+            <option value="45+">45+</option>
+          </select>
+          <label for="gender">Gender:</label>
+
+          <select id="gender" name="gender">
+            <option value="">Select your gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="non-binary">Non-binary</option>
+          </select>
+
+          <label for="interests"> Interests:</label>
+          <select id="interests">
+            <option value="">Select your interests</option>
+            <option value="reading">Reading</option>
+            <option value="music">Music</option>
+            <option value="cooking">Cooking</option>
+            <option value="sports">Sports</option>
+            <option value="art">Art</option>
+            <option value="travel">Travel</option>
+          </select>
+
+          <!--<input type="text" id="hobbies" placeholder="Enter your hobbies/interests" />-->
+
+          <label for="bio">Short Bio:</label>
+          <textarea
+            id="bio"
+            placeholder="Write something about yourself..."
+          ></textarea>
+
+          <hr />
+
+          <button type="submit">Save Changes</button>
+        </form>
+      </div>
+    </section>
+    <script type="module" src="../src/frontend/scripts/settings.js"></script>
+  </body>
+</html>

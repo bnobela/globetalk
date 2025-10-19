@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <title>GlobeTalk Landing</title>
+  <style>
+    /* Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(to right, #1976d2, #32dde3, #1976d2);
+      color: #0d1b2a;
+    }
+
+    /* Navbar */
+header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 1rem 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+header .logo {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1976d2;
+  letter-spacing: -0.5px;
+}
+
+/* ✅ Navigation items to the right */
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+nav .logo {
+  flex: 1;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-left: auto; /* Pushes nav items to the right */
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: #4a5568;
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+nav ul li a:hover {
+  background: #f7fafc;
+  color: #667eea;
+  transform: translateY(-2px);
+}
+
+   
+    /*Shared Sections Styles*/
+    .section-card {
+      border-radius: 20px;
+      margin: 40px auto;
+      max-width: 1200px;
+      padding:60px 20px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+    }
+
+    .hero-section h1 {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #14213d;
+    }
+
+    .hero-section p {
+      font-size: 1rem;
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    button {
+      background-color: #0077b6;
+      color: white;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #023e8a;
+    }
+
+    /* Images Section */
+    .images {
+      position: relative;
+      margin-top: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .cloud {
+      width: 100px;
+      position: absolute;
+      top: 20px;
+    }
+
+    .cloud-left {
+      left: 10%;
+    }
+
+    .cloud-right {
+      right: 10%;
+    }
+
+    .girl {
+      width: 180px;
+    }
+
+    .globe {
+      width: 120px;
+    }
+
+    .boy {
+      width: 160px;
+    }
+
+    /* About Section */
+  /*  .about-section {
+    padding: 80px 20px;
+    background-color: #add8e6; 
+    border-radius: 20px;
+    margin: 40px auto;
+  }*/
+
+  .about-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .about-text {
+    flex: 1 1 400px;
+    max-width: 600px;
+  }
+
+  .about-text h2 {
+    font-size: 2rem;
+    color: #14213d;
+    margin-bottom: 20px;
+  }
+
+  .about-text p {
+    font-size: 1.1rem;
+    color: #333;
+    line-height: 1.6;
+    margin-bottom: 15px;
+  }
+
+  .about-image {
+    flex: 1 1 300px;
+    text-align: center;
+  }
+
+  .about-image img {
+    max-width: 80%;
+    height: auto;
+    border-radius: 12px;
+  }
+
+  /*Features Section*/
+  /*.features {
+    padding: 80px 20px;
+    background-color: #ffffff;
+  }*/
+  .features-container{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    justify-content: center;
+  }
+
+  .feature-card {
+    background-color: #f0f4f8;
+    border-radius: 20px;
+    padding: 30px 20px;
+    width: 250px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .feature-card h3{
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: #14213d;
+  }
+  .feature-card p{
+    font-size: 1rem;
+    color: #333;
+    line-height: 1.4;
+  }
+
+  /* Footer */
+  .footer {
+  background-color: rgba(123, 167, 202, 0.8);
+  color: #ffffff;
+  padding: 40px 20px 20px;
+  border-radius: 12px 12px 0 0;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  gap: 40px;
+}
+
+.footer-column {
+  position: relative;
+  margin: 10px;
+  min-width: 200px;
+}
+
+.footer-column h3 {
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  color: #add8e6;
+}
+
+.footer-column ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-column ul li {
+  margin-bottom: 10px;
+}
+
+.footer-column a {
+  color: #ffffff;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.footer-column a:hover {
+  color: #add8e6;
+}
+
+.footer-bottom {
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding-top: 15px;
+  font-size: 0.9rem;
+}
+
+
+  </style>
+
+</head>
+<body>
+ <header>
+  <nav>
+    <div class="logo">GlobeTalk</div>
+    <ul>
+      <li><a href="#home">Home</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how-it-works">How it Works</a></li>
+      <li><a href="#contacts">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+  <section class="hero section-card" id="home">
+  <h1>Connect with Pen Pals <br> Around the World</h1>
+  <p>GlobeTalk is a virtual Pen Pals platform to make friends worldwide through letter exchange.</p>
+
+  <div class="images">
+    <img src="pages/images/cloud1.png" alt="cloud" class="cloud-left">
+    <img src="pages/images/user1.png" alt="girl" class="girl">
+    <img src="pages/images/globe.webp" alt="globe" class="globe">
+    <img src="pages/images/user2.png" alt="boy" class="boy">
+    <img src="pages/images/cloud2.png" alt="cloud" class="cloud-right">
+  </div>
+  <button id="getStartedBtn">Get started</button>
+
+</section>
+
+<section class="about section-card" id="about">
+  <div class="about-container">
+    <div class="about-text">
+      <h2>About GlobeTalk</h2>
+      <p>GlobeTalk is a platform that connects people from different countries through pen pal letters, helping users learn about other cultures, make lifelong friends, and share experiences globally.</p>
+      <p>Our mission is to foster meaningful connections and cultural exchange in a safe, friendly, and easy-to-use environment.</p>
+    </div>
+    <div class="about-image">
+      <img src="pages/images/about-illustration.png" alt="Connecting the world">
+    </div>
+  </div>
+</section>
+
+<section class="features-section section-card" id="features">
+  <div class="features-container">
+    <div class="feature-card">
+      <h3>Make Friends</h3>
+      <p>Connect with people worldwide.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Learn Cultures</h3>
+      <p>Discover traditions from other countries.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Safe Exchange</h3>
+      <p>Secure and moderated pen pal letters.</p>
+    </div>
+  </div>
+</section>
+
+<section class="how-it-works section-card" id="how-it-works">
+  <h2>How It Works</h2>
+  <div class="steps-container">
+    <div class="step">
+      <h3>1. Sign Up</h3>
+      <p>Create your free account in just a few clicks.</p>
+    </div>
+    <div class="step">
+      <h3>2. Find a Pen Pal</h3>
+      <p>Browse profiles and get matched with people from around the world.</p>
+    </div>
+    <div class="step">
+      <h3>3. Start Exchanging Letters</h3>
+      <p>Write and receive virtual letters safely on GlobeTalk.</p>
+    </div>
+  </div>
+</section>
+
+
+<footer class="footer" id="contacts">
+  <div class="footer-content">
+    <div class="footer-column">
+      <h3>Contacts</h3>
+      <ul>
+        <li><a href="mailto:info@globetalk.com"><i class="fas fa-envelope"></i> info@globetalk.com</a></li>
+        <li><i class="fas fa-phone"></i> +27 60 456 9013</li>
+      </ul>
+    </div>
+
+    <div class="footer-column">
+      <h3>Address</h3>
+      <ul>
+        <li><i class="fas fa-map-marker-alt"></i> 123 Braamfontein</li>
+        <li>Johannesburg</li>
+        <li>South Africa</li>
+      </ul>
+    </div>
+
+    <div class="footer-column">
+      <h3>Socials</h3>
+      <ul>
+        <li><a href="#"><i class="fab fa-facebook-f"></i> Facebook</a></li>
+        <li><a href="#"><i class="fab fa-twitter"></i> Twitter</a></li>
+        <li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy; 2025 GlobeTalk. All rights reserved.</p>
+  </div>
+</footer>
+
+<script type="module" src="src/frontend/scripts/index.js"></script>
+
+</body>
+</html>

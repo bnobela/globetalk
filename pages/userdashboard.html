@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlobeTalk - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../src/frontend/styles/userdashboard.css">
+</head>
+<body>
+    <div class="min-h-screen">
+        <!-- Navigation -->
+        <nav>
+            <a href="userdashboard.html" class="nav-link">Home</a>
+            <a href="findPal.html" class="nav-link">Find Pen Pal</a>
+            <a href="chats.html" class="nav-link">Chats</a> <!-- Added link to chats.html -->
+            <a href="penpals.html" class="nav-link">My Penpals</a>
+            <a href="settings.html" class="nav-link">Settings & Safety</a>
+            <button id="logoutBtn" class="nav-link">Logout</button>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- GlobeTalk branding -->
+            <h1 class="globetalk-title">GlobeTalk</h1>
+
+            <!-- Dashboard Title -->
+            <div class="dashboard-title-container">
+                <h2 class="dashboard-title">Dashboard</h2>
+            </div>
+
+            <!-- User Header: avatar + username -->
+            <div class="user-header" id="userHeader">
+            <img id="userAvatar" src="images/nonb.png" alt="Avatar" class="user-avatar" />
+            <div class="user-info">
+                <h3 id="displayUsername">Loading...</h3>
+                <div class="user-meta">
+                    <p id="displayRegion">&nbsp;</p>
+                    <p id="displayBio">&nbsp;</p>
+                </div>    
+            </div>
+            </div>
+
+            <!-- Pen Pal Suggestions Section -->
+            <div class="section">
+                <h3 class="section-title">Pen Pal Suggestions</h3>
+                <div class="cards-container" id="penPalCards">
+                    <span>Loading...</span>
+                </div>
+            </div>
+
+            <!-- Active Pen Pals Section -->
+            <div class="section">
+                <h3 class="section-title">Your Active Pen Pals</h3>
+                <div class="cards-container" id="activePenPals">
+                    <span>Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="../src/frontend/scripts/userdashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+{
+  "name": "globetalk",
+  "version": "1.0.0",
+  "description": "A virtual pen pal platform connecting people worldwide through text-based communication.",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "serve:frontend": "npx http-server pages -o index.html",
+    "test": "jest --silent --coverage",
+    "lint": "eslint src tests pages",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GlobeTalk/globetalk.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GlobeTalk/globetalk/issues"
+  },
+  "homepage": "https://github.com/GlobeTalk/globetalk#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "emoji-picker-element": "^1.27.0",
+    "express": "^5.1.0",
+    "firebase": "^11.10.0",
+    "firebase-admin": "^13.5.0"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.28.3",
+    "@cypress/code-coverage": "^3.14.7",
+    "@eslint/js": "^9.33.0",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.8.0",
+    "@testing-library/user-event": "^14.6.1",
+    "babel-jest": "^30.1.1",
+    "cypress": "^15.3.0",
+    "eslint": "^9.33.0",
+    "globals": "^16.3.0",
+    "http-server": "^14.1.1",
+    "jest": "^30.1.3",
+    "jest-environment-jsdom": "^30.1.2",
+    "jsdom": "^26.1.0",
+    "supertest": "^7.1.4",
+    "vite": "^7.1.6"
+  }
+}

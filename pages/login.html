@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GlobeTalk – Login</title>
+  <link rel="stylesheet" href="../src/frontend/styles/login.css">
+</head>
+<body>
+  <main class="login-wrapper">
+    <section class="section-card login-left">
+      <h1 class="logo">🌍 GlobeTalk</h1>
+      <div class="illustrations">
+        <img src="images/user1.png" alt="female user">
+        <img src="images/globe.webp" class="globe" alt="globe">
+        <img src="images/user2.png" alt="male user">
+      </div>
+      <div class="welcome">
+        <h2>Hello, <span>Welcome!</span></h2>
+        <p class="subtitle">Talk Beyond Borders. Your world is one conversation away.</p>
+      </div>
+      <div class="consent-boxes">
+        <label for="privacy">
+          <input type="checkbox" id="privacy">
+          I accept the <a href="privacy.html" target="_blank">Privacy Policy</a>.
+        </label>
+        <label for="consent">
+          <input type="checkbox" id="consent">
+          I consent to data processing as described in the <a href="terms.html" target="_blank">Terms</a>.
+        </label>
+      </div>
+    </section>
+    <section class="section-card login-right">
+      <button id="loginBtn" class="google-btn" aria-label="Continue with Google">
+        <img src="images/google-icon.png" alt="Google logo">
+        Continue with Google
+      </button>
+      <div id="statusMessage" class="statusMessage"></div>
+    </section>
+  </main>
+  <script type="module" src="../src/frontend/scripts/login.js"></script>
+</body>
+</html>

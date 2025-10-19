@@ -1,0 +1,128 @@
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(to right, #1976d2, #32dde3, #1976d2);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+    }
+    .login-wrapper {
+      display: flex;
+      gap: 30px;
+      width: 90%;
+      max-width: 1200px;
+    }
+    .section-card {
+      background: whitesmoke;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      padding: 40px 30px;
+      flex: 1;
+      min-width: 300px;
+    }
+    .logo {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #000060;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+    .illustrations {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+    .illustrations img { max-height: 160px; }
+    .illustrations .globe { max-height: 90px; }
+    .welcome {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .welcome h2 {
+      font-size: 1.8rem;
+      color: #000;
+    }
+    .welcome span { font-weight: 700; }
+    .subtitle {
+      font-size: 1rem;
+      color: #222;
+      margin-top: 8px;
+    }
+    .consent-boxes {
+      margin-top: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      font-size: 0.95rem;
+    }
+    .consent-boxes label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #1976d2;
+      cursor: pointer;
+    }
+    input[type="checkbox"]:focus {
+      outline: 2px solid #1976d2;
+      outline-offset: 2px;
+    }
+    .login-right {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .google-btn {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border: none;
+      border-radius: 25px;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+    .google-btn:focus {
+      outline: 2px solid #1976d2;
+      outline-offset: 2px;
+    }
+    .google-btn img {
+      width: 22px;
+      height: 22px;
+      margin-right: 10px;
+    }
+    .google-btn:hover {
+      transform: scale(1.05);
+    }
+    #statusMessage {
+      margin-top: 15px;
+      font-size: 1rem;
+      color: green;
+      min-height: 24px;
+      display: none;
+    }
+    #statusMessage.visible {
+      display: block;
+    }
+    @media (max-width: 768px) {
+      .login-wrapper {
+        flex-direction: column;
+        align-items: center;
+      }
+    }

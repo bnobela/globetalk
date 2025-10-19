@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlobeTalk - Create Your Profile</title>
+    <link rel="stylesheet" href="..\src\frontend\styles\onboarding.css">
+</head>
+<body>
+    <main>
+        <header>
+            <h1>🌍 GlobeTalk</h1>
+            <p class="subtitle">Create your anonymous profile to connect with pen pals worldwide</p>
+        </header>
+        
+        <form class="profile-form" id="profileForm">
+            <!-- Basic Identity -->
+            <div class="form-section">
+                <h2 class="section-title"><span class="section-icon">👤</span> Profile Information</h2>
+                
+                <div class="form-group">
+                    <label for="languages">Language Preferences:</label>
+                    <select id="languages" class="languages" name="languages" required>
+                                <option value="">-- Select Language --</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="region">Region/Time Zone:</label>
+                            <select id="region" name="region" required>
+                                <option value="">Select your Region/Timezone</option>
+                                <option value="USA(GMT-4)">USA(GMT-4)</option>
+                                <option value="SA(GMT+2)">SA(GMT+2)</option>
+                                <option value="UK(GMT+1)">UK(GMT+1)</option>
+                                <option value="India(GMT+5:30)">India(GMT+5:30)</option>
+                            </select>
+                            <div id="regionOptions" class="dropdown-options"></div>
+                    <div class="current-location">
+                        <span id="detectedLocation">Detecting your region...</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Languages & Hobbies -->
+            <div class="form-section">
+                <h2 class="section-title"><span class="section-icon">💬</span>Personal Info</h2>
+
+                <div class="form-group">
+                    <label for="ageRange">Age Range:</label>
+                    <select id="ageRange" name="ageRange" required>
+                        <option value="">Select your age range</option>
+                        <option value="18-24">18–24</option>
+                        <option value="25-34">25–34</option>
+                        <option value="35-44">35–44</option>
+                        <option value="45+">45+</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="gender">Gender:</label>
+                    <select id="gender" name="gender" required>
+                        <option value="">Select your gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="non-binary">Non-binary</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="hobbies">Interests:</label>
+                    <select id="hobbies">
+                        <option value="">Select your interests</option>
+                        <option value="reading">Reading</option>
+                        <option value="music">Music</option>
+                        <option value="cooking">Cooking</option>
+                        <option value="sports">Sports</option>
+                        <option value="art">Art</option>
+                        <option value="travel">Travel</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="bio">Short Bio:</label>
+                    <input type="text" id="bio" name="bio" placeholder="Write something about yourself..." required>
+                </div>
+            </div>
+
+            
+            
+            <!-- Personal Flavor 
+            <div class="form-section">
+                <h2 class="section-title"><span class="section-icon">✨</span> Personal Flavor</h2>
+                
+                <div class="form-group">
+                    <label for="threeWords">Three words that describe you:</label>
+                    <input type="text" id="threeWords" name="threeWords" placeholder="e.g., curious, playful, night-owl" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="happyThing">A small thing that makes you happy:</label>
+                    <input type="text" id="happyThing" name="happyThing" placeholder="e.g., fresh bread smell" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="dailyRitual">Your favorite daily ritual:</label>
+                    <input type="text" id="dailyRitual" name="dailyRitual" placeholder="e.g., morning tea on the balcony" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="wonderAbout">One thing you often wonder about:</label>
+                    <input type="text" id="wonderAbout" name="wonderAbout" placeholder="e.g., what stars look like up close" required>
+                </div>
+            </div>-->
+            
+            <!-- Cultural Connection 
+            <div class="form-section">
+                <h2 class="section-title"><span class="section-icon">🌐</span> Cultural Connection</h2>
+                
+                <div class="form-group">
+                    <label for="uniqueThing">Something unique about where you live:</label>
+                    <input type="text" id="uniqueThing" name="uniqueThing" placeholder="e.g., We celebrate spring with water fights" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="proverb">A saying/proverb from your culture:</label>
+                    <input type="text" id="proverb" name="proverb" placeholder="e.g., When elephants fight, the grass suffers" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="localFood">A local food or drink you recommend:</label>
+                    <input type="text" id="localFood" name="localFood" placeholder="e.g., Try rooibos tea with honey" required>
+                </div>
+            </div>-->
+            
+            <!-- Mystery & Fun 
+            <div class="form-section">
+                <h2 class="section-title"><span class="section-icon">🎭</span> Mystery & Fun</h2>
+                
+                <div class="form-group">
+                    <label for="season">If you were a season, which one would you be? Why?</label>
+                    <textarea id="season" name="season" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="animal">Pick an animal that matches your personality:</label>
+                    <input type="text" id="animal" name="animal" placeholder="e.g., Dolphin" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="song">What song would play in your "life movie intro scene"?</label>
+                    <input type="text" id="song" name="song" placeholder="e.g., Happy by Pharrell Williams" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="penPalType">Finish the sentence: "I am the kind of pen pal who…"</label>
+                    <textarea id="penPalType" name="penPalType" required></textarea>
+                </div>
+            </div>-->
+            
+            <button type="submit" class="btn">Create My Profile</button>
+        </form>
+    </main>
+
+    <footer>
+        <p>GlobeTalk - Connecting hearts and minds across the globe</p>
+    </footer>
+
+    <script type="module" src="../src/frontend/scripts/onboarding.js"></script>
+</body>
+</html>

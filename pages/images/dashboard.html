@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GlobeTalk – Anonymous Pen Pals</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(to right, #1976d2, #32dde3, #1976d2);
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
+
+    .dashboard-wrapper {
+      display: flex;
+      gap: 25px;
+      width: 95%;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .section-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      padding: 25px;
+      backdrop-filter: blur(10px);
+    }
+
+    /* Left Sidebar - Navigation */
+    .sidebar {
+      width: 280px;
+      height: fit-content;
+      position: sticky;
+      top: 20px;
+    }
+
+    .logo {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #000060;
+      margin-bottom: 30px;
+      text-align: center;
+      background: linear-gradient(45deg, #1976d2, #32dde3);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-menu {
+      list-style: none;
+      margin-bottom: 30px;
+    }
+
+    .nav-menu li {
+      margin-bottom: 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .nav-item:hover,
+    .nav-item[aria-current="page"] {
+      background: linear-gradient(135deg, #1976d2, #32dde3);
+      color: white;
+      transform: translateX(4px);
+    }
+
+    .nav-icon {
+      font-size: 1.1rem;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 15px;
+      border-bottom: 2px solid rgba(25, 118, 210, 0.1);
+    }
+
+    .header h1 {
+      font-size: 1.8rem;
+      color: #000060;
+      font-weight: 600;
+    }
+
+    .notification-bell {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1976d2, #32dde3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .notification-bell:hover {
+      transform: scale(1.05);
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      background: #ff4757;
+      color: white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Hero Section - Welcome & Stats */
+    .hero-section {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 25px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .welcome-area {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .welcome-area h2 {
+      color: #000060;
+      font-size: 1.6rem;
+      font-weight: 600;
+    }
+
+    .welcome-text {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .quick-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border-radius: 25px;
+      background: linear-gradient(135deg, #1976d2, #32dde3);
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .stat-card {
+      text-align: center;
+      padding: 20px;
+      background: linear-gradient(135deg, #1976d2, #32dde3);
+      border-radius: 12px;
+      color: white;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      display: block;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      margin-top: 4px;
+    }
+
+    /* Matches Section */
+    .matches-section {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .section-header {
+      padding: 20px 25px;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .section-title {
+      font-size: 1.3rem;
+      color: #000060;
+      font-weight: 600;
+    }
+
+    .view-all-link {
+      color: #1976d2;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .matches-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .match-item {
+      display: grid;
+      grid-template-columns: 60px 1fr auto;
+      align-items: center;
+      padding: 20px 25px;
+      border-bottom: 1px solid #f8f9fa;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .match-item:hover {
+      background: #f8f9fa;
+    }
+
+    .match-item:last-child {
+      border-bottom: none;
+    }
+
+    .match-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1976d2, #32dde3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .match-info {
+      margin-left: 16px;
+      flex: 1;
+    }
+
+    .match-title {
+      font-weight: 600;
+      color: #000060;
+      margin-bottom: 4px;
+      font-size: 1rem;
+    }
+
+    .match-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    .match-status {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .status-waiting {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status-active {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-new-message {
+      background: #cce5ff;
+      color: #004085;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    .match-time {
+      font-size: 0.8rem;
+      color: #999;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    /* Messages Preview */
+    .message-preview {
+      padding: 20px 25px;
+      border-top: 1px solid #f0f0f0;
+      background: #f8f9fa;
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .preview-title {
+      font-weight: 600;
+      color: #000060;
+    }
+
+    .preview-time {
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    .preview-text {
+      color: #666;
+      line-height: 1.4;
+      font-size: 0.95rem;
+    }
+
+    /* Right Sidebar - Cultural Explorer */
+    .right-sidebar {
+      width: 320px;
+      height: fit-content;
+      position: sticky;
+      top: 20px;
+    }
+
+    .widget {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .widget h3 {
+      color: #000060;
+      margin-bottom: 16px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cultural-fact {
+      background: #f8f9fa;
+      border-left: 4px solid #1976d2;
+      padding: 16px;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 16px;
+    }
+
+    .fact-country {
+      font-weight: 600;
+      color: #1976d2;
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+
+    .fact-text {
+      color: #555;
+      line-height: 1.5;
+    }
+
+    .connection-suggestions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .suggestion-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .suggestion-item:hover {
+      background: #e9ecef;
+      transform: translateX(4px);
+    }
+
+    .suggestion-flag {
+      font-size: 1.2rem;
+    }
+
+    .suggestion-info h4 {
+      font-size: 0.95rem;
+      color: #000060;
+      margin-bottom: 2px;
+    }
+
+    .suggestion-info p {
+      font-size: 0.8rem;
+      color: #666;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #666;
+    }
+
+    .empty-icon {
+      font-size: 4rem;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .empty-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #000060;
+      margin-bottom: 8px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .dashboard-wrapper {
+        flex-direction: column;
+      }
+      
+      .right-sidebar {
+        order: 3;
+      }
+      
+      .hero-section {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-wrapper {
+        width: 100%;
+        padding: 0 10px;
+      }
+      
+      .sidebar,
+      .right-sidebar {
+        width: 100%;
+      }
+      
+      .header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+      }
+      
+      .match-item {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        text-align: center;
+      }
+      
+      .match-time {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="dashboard-wrapper">
+    <!-- Navigation Sidebar -->
+    <nav class="section-card sidebar" aria-label="Main navigation">
+      <header>
+        <h1 class="logo">🌍 GlobeTalk</h1>
+      </header>
+      
+      <ul class="nav-menu" role="menubar">
+        <li role="none">
+          <a href="#" class="nav-item" aria-current="page" role="menuitem">
+            <span class="nav-icon" aria-hidden="true">🏠</span>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li role="none">
+          <a href="#" class="nav-item" role="menuitem">
+            <span class="nav-icon" aria-hidden="true">💬</span>
+            <span>Messages</span>
+          </a>
+        </li>
+        <li role="none">
+          <a href="#" class="nav-item" role="menuitem">
+            <span class="nav-icon" aria-hidden="true">👥</span>
+            <span>Connections</span>
+          </a>
+        </li>
+        <li role="none">
+          <a href="#" class="nav-item" role="menuitem">
+            <span class="nav-icon" aria-hidden="true">🔔</span>
+            <span>Notifications</span>
+          </a>
+        </li>
+        <li role="none">
+          <a href="#" class="nav-item" role="menuitem">
+            <span class="nav-icon" aria-hidden="true">⚙️</span>
+            <span>Settings</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Main Content Area -->
+    <section class="section-card main-content" aria-label="Main content">
+      <header class="header">
+        <h1>Good morning, Traveler</h1>
+        <button class="notification-bell" aria-label="3 unread notifications" aria-expanded="false">
+          🔔
+          <span class="notification-badge" aria-hidden="true">3</span>
+        </button>
+      </header>
+
+      <!-- Hero Section -->
+      <section class="hero-section">
+        <div class="welcome-area">
+          <h2>Welcome back to your global journey</h2>
+          <p class="welcome-text">Continue your anonymous conversations or find a new pen pal from around the world. Every letter connects cultures and builds bridges across borders.</p>
+          
+          <div class="quick-actions">
+            <button class="action-btn">
+              <span aria-hidden="true">✉️</span>
+              Write a Letter
+            </button>
+            <button class="action-btn">
+              <span aria-hidden="true">🔍</span>
+              Find Pen Pal
+            </button>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <article class="stat-card">
+            <span class="stat-number" aria-label="5 active connections">5</span>
+            <span class="stat-label">Active Connections</span>
+          </article>
+          <article class="stat-card">
+            <span class="stat-number" aria-label="12 countries connected">12</span>
+            <span class="stat-label">Countries Reached</span>
+          </article>
+        </div>
+      </section>
+
+      <!-- Active Matches -->
+      <section class="matches-section" aria-labelledby="matches-heading">
+        <header class="section-header">
+          <h2 id="matches-heading" class="section-title">Active Pen Pals</h2>
+          <a href="#" class="view-all-link">View all</a>
+        </header>
+        
+        <div class="matches-list">
+          <!-- Active Match -->
+          <article class="match-item" tabindex="0" role="button" aria-label="Open conversation with pen pal from Brazil">
+            <div class="match-avatar" aria-hidden="true">BR</div>
+            <div class="match-info">
+              <h3 class="match-title">Pen Pal from Brazil</h3>
+              <div class="match-meta">
+                <span class="match-status status-active">Active</span>
+                <span>Age 25-34 • Loves literature</span>
+              </div>
+            </div>
+            <time class="match-time" datetime="2025-09-22T09:00" aria-label="Last message 2 hours ago">2h ago</time>
+          </article>
+
+          <!-- Match with New Message -->
+          <article class="match-item" tabindex="0" role="button" aria-label="Open conversation with pen pal from Japan - new message">
+            <div class="match-avatar" aria-hidden="true">JP</div>
+            <div class="match-info">
+              <h3 class="match-title">Pen Pal from Japan</h3>
+              <div class="match-meta">
+                <span class="match-status status-new-message">New Letter</span>
+                <span>Age 18-24 • Photography enthusiast</span>
+              </div>
+            </div>
+            <time class="match-time" datetime="2025-09-22T08:30" aria-label="New message received 3 hours ago">3h ago</time>
+          </article>
+
+          <!-- Waiting Match -->
+          <article class="match-item" tabindex="0" role="button" aria-label="Waiting for response from pen pal in Germany">
+            <div class="match-avatar" aria-hidden="true">DE</div>
+            <div class="match-info">
+              <h3 class="match-title">Pen Pal from Germany</h3>
+              <div class="match-meta">
+                <span class="match-status status-waiting">Waiting</span>
+                <span>Age 35-44 • History buff</span>
+              </div>
+            </div>
+            <time class="match-time" datetime="2025-09-21T14:00" aria-label="Message sent yesterday">Yesterday</time>
+          </article>
+        </div>
+
+        <!-- Latest Message Preview -->
+        <div class="message-preview">
+          <header class="preview-header">
+            <h3 class="preview-title">Latest from Japan ✉️</h3>
+            <time class="preview-time" datetime="2025-09-22T08:30">3 hours ago</time>
+          </header>
+          <p class="preview-text">"Thank you for sharing about your hometown festival! In Japan, we have a similar autumn festival called Tsukimi where we admire the full moon and eat dango. Have you ever tried making traditional food from your culture? I'd love to learn about it!"</p>
+        </div>
+      </section>
+
+      <!-- Empty State Example (commented out - use when no matches) -->
+      <!--
+      <section class="empty-state" aria-label="No active connections">
+        <div class="empty-icon" aria-hidden="true">✉️</div>
+        <h2 class="empty-title">No pen pals yet</h2>
+        <p>Your first letter awaits! Find someone around the world to start a meaningful conversation.</p>
+        <button class="action-btn" style="margin-top: 16px;">Find Your First Pen Pal</button>
+      </section>
+      -->
+    </section>
+
+    <!-- Cultural Explorer Sidebar -->
+    <aside class="section-card right-sidebar" aria-label="Cultural explorer">
+      <div class="widget">
+        <h3>
+          <span aria-hidden="true">🌏</span>
+          Today's Cultural Fact
+        </h3>
+        
+        <article class="cultural-fact">
+          <h4 class="fact-country">🇯🇵 Japan</h4>
+          <p class="fact-text">In Japan, it's customary to remove your shoes when entering someone's home. This tradition dates back to the Edo period and helps keep living spaces clean. When visiting a Japanese home, look for a small step down at the entrance called a <em>genkan</em>.</p>
+        </article>
+
+        <article class="cultural-fact">
+          <h4 class="fact-country">🇧🇷 Brazil</h4>
+          <p class="fact-text">Brazilians value <em>jeitinho</em> - a creative, friendly way of solving problems with flexibility and warmth. It's more than just "finding a way" - it's about maintaining relationships while getting things done.</p>
+        </article>
+      </div>
+
+      <div class="widget">
+        <h3>
+          <span aria-hidden="true">🔗</span>
+          Suggested Connections
+        </h3>
+        
+        <div class="connection-suggestions">
+          <button class="suggestion-item" aria-label="Connect with someone from France">
+            <span class="suggestion-flag" aria-hidden="true">🇫🇷</span>
+            <div class="suggestion-info">
+              <h4>France</h4>
+              <p>Language learners</p>
+            </div>
+          </button>
+          
+          <button class="suggestion-item" aria-label="Connect with someone from Kenya">
+            <span class="suggestion-flag" aria-hidden="true">🇰🇪</span>
+            <div class="suggestion-info">
+              <h4>Kenya</h4>
+              <p>Storytellers</p>
+            </div>
+          </button>
+          
+          <button class="suggestion-item" aria-label="Connect with someone from Mexico">
+            <span class="suggestion-flag" aria-hidden="true">🇲🇽</span>
+            <div class="suggestion-info">
+              <h4>Mexico</h4>
+              <p>Food enthusiasts</p>
+            </div>
+          </button>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    // Enhanced accessibility and interactivity
+    document.addEventListener('DOMContentLoaded', function() {
+      // Keyboard navigation for match items
+      const matchItems = document.querySelectorAll('.match-item');
+      matchItems.forEach(item => {
+        item.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            // Navigate to conversation
+            console.log('Opening conversation:', this.querySelector('.match-title').textContent);
+          }
+        });
+
+        item.addEventListener('click', function() {
+          // Visual feedback
+          this.style.background = '#e3f2fd';
+          setTimeout(() => {
+            this.style.background = '';
+          }, 150);
+        });
+      });
+
+      // Notification bell accessibility
+      const notificationBell = document.querySelector('.notification-bell');
+      notificationBell.addEventListener('click', function() {
+        const expanded = this.getAttribute('aria-expanded') === 'true';
+        this.setAttribute('aria-expanded', !expanded);
+        console.log('Opening notifications panel');
+      });
+
+      // Quick action buttons
+      const actionButtons = document.querySelectorAll('.action-btn');
+      actionButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const action = this.textContent.trim();
+          console.log(`User clicked: ${action}`);
+          
+          // Visual feedback
+          this.style.transform = 'scale(0.95)';
+          setTimeout(() => {
+            this.style.transform = '';
+          }, 150);
+        });
+      });
+
+      // Connection suggestions
+      const suggestionItems = document.querySelectorAll('.suggestion-item');
+      suggestionItems.forEach(item => {
+        item.addEventListener('click', function() {
+          console.log('Starting connection with:', this.querySelector('h4').textContent);
+          // Start matchmaking process
+        });
+      });
+    });
+  </script>
+</body>
+</html>

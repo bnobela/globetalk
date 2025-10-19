@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GlobeTalk - My Chats</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../src/frontend/styles/chat.css">
+  <script type="module" src="/node_modules/emoji-picker-element/index.js"></script>
+  
+</head>
+<body>
+  <nav aria-label="Main navigation">
+    <span class="nav-link" style="font-family: 'Poppins', sans-serif; font-weight: 600; color: #667eea;">GlobeTalk</span>
+    <a href="userdashboard.html" class="nav-link">Home</a>
+    <a href="findPal.html" class="nav-link">Find Pen Pal</a>
+  </nav>
+
+  <div class="container">
+    <aside class="sidebar" aria-label="Chat list">
+      <div class="sidebar-header">My Chats</div>
+      <div class="chat-list" id="chatList" tabindex="0" aria-live="polite">
+        <div class="skeleton-loader" id="chatSkeleton" style="display:none;">
+          <div class="skeleton-avatar"></div>
+          <div class="skeleton-lines"></div>
+        </div>
+        <div class="loading">Loading chats...</div>
+      </div>
+    </aside>
+    <main class="main">
+      <div class="chat-header" id="chatHeader">
+        <button id="backBtn" class="back-btn" aria-label="Back to chat list" style="display:none;">←</button>
+        <span id="chatHeaderText">Select a chat to start messaging</span>
+        <div class="chat-menu-container" style="display:inline-block; position:relative; float:right;">
+          <button id="chatMenuBtn" class="chat-menu-btn" aria-label="More options" style="background:none; border:none; cursor:pointer; font-size:22px; padding:4px 8px;">
+            &#8942;
+          </button>
+          <div id="chatMenuDropdown" class="chat-menu-dropdown" style="display:none; position:absolute; right:0; top:32px; background:#fff; border:1px solid #e5e7eb; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,0.08); min-width:120px; z-index:10;">
+            <button id="blockUserBtn" class="chat-menu-item" style="width:100%; background:none; border:none; padding:10px 16px; text-align:left; cursor:pointer; color:#ef4444;">Block</button>
+            <button id="flagUserBtn" class="chat-menu-item" style="width:100%; background:none; border:none; padding:10px 16px; text-align:left; cursor:pointer; color:#f59e42;">Flag</button>
+          </div>
+        </div>
+      </div>
+      <div class="messages" id="messages" aria-live="polite">
+        <div class="no-messages"><span class="empty-icon">💬</span> Select a conversation to view messages</div>
+      </div>
+      <form class="chat-input" id="chatForm" autocomplete="off" aria-label="Send message">
+        <div class="input-wrapper">
+          <button type="button" id="emojiButton" class="emoji-button" aria-label="Open emoji picker">😊</button>
+          <textarea id="messageInput" placeholder="Type your message..." required rows="1" aria-label="Message input"></textarea>
+        </div>
+        <button type="submit" class="send-button" aria-label="Send message">Send</button>
+        <emoji-picker id="emojiPicker" style="display: none; position: absolute; bottom: 100%; left: 0;"></emoji-picker>
+      </form>
+    </main>
+  </div>
+
+  <script type="module">
+    import { observeUser, observeToken } from "../src/services/firebase.js";
+
+    const API_BASE = "/api/chat";
+    const API_PROFILE_BASE = "https://binarybandits-profileapi.onrender.com/api/profile";
+    const API_MODERATION_BASE = "https://binarybandits-moderationapi.onrender.com/api/moderation";
+    const chatList = document.getElementById("chatList");
+    const messagesDiv = document.getElementById("messages");
+    const chatHeader = document.getElementById("chatHeader");
+    const chatForm = document.getElementById("chatForm");
+    const messageInput = document.getElementById("messageInput");
+    const backBtn = document.getElementById("backBtn");
+    const emojiButton = document.getElementById("emojiButton");
+    const emojiPicker = document.getElementById("emojiPicker");
+
+    const sendButton = chatForm.querySelector("button[type=submit]");
+
+    const MAX_RETRY_ATTEMPTS = 3;
+    const RETRY_DELAY = 1000;
+
+    let chats = [];
+    let selectedChat = null;
+    let messages = [];
+    let messagesNextPage = null;
+    let chatsNextPage = null;
+    let loadingChats = false;
+    let loadingMessages = false;
+    let ID_TOKEN = null;
+    let CURRENT_UID = null;
+    let userCache = {};
+      // Get targetUser and type param from URL
+      function getQueryParam(param) {
+        try {
+          const urlParams = new URLSearchParams(window.location.search);
+          return urlParams.get(param);
+        } catch (error) {
+          console.error('Error parsing query parameters:', error);
+          return null;
+        }
+      }
+      const TARGET_USER_ID = getQueryParam('targetUser');
+      const CHAT_TYPE = getQueryParam('type'); // <-- Add this line
+
+    // Auto-resize textarea
+    messageInput.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = (this.scrollHeight) + 'px';
+      // Disable send button if input is empty
+      sendButton.disabled = !this.value.trim();
+    });
+
+    // Initial state: disable send button
+    sendButton.disabled = true;
+
+    // Emoji picker functionality
+    emojiButton.addEventListener('click', () => {
+      emojiPicker.style.display = emojiPicker.style.display === 'none' ? 'block' : 'none';
+      // Add back button if not already present
+      if (!document.getElementById('emojiBackBtn')) {
+        const backBtn = document.createElement('button');
+        backBtn.id = 'emojiBackBtn';
+        backBtn.textContent = 'Back';
+        backBtn.style.cssText = 'position:absolute;top:8px;right:8px;z-index:2;background:#e5e7eb;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:1rem;';
+        backBtn.onclick = () => { emojiPicker.style.display = 'none'; };
+        emojiPicker.appendChild(backBtn);
+      }
+    });
+
+    // Do NOT hide the picker on emoji click anymore
+    emojiPicker.addEventListener('emoji-click', event => {
+      const emoji = event.detail.unicode;
+      const textarea = messageInput;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const text = textarea.value;
+      textarea.value = text.slice(0, start) + emoji + text.slice(end);
+      textarea.selectionStart = textarea.selectionEnd = start + emoji.length;
+      textarea.focus();
+      // emojiPicker.style.display = 'none'; // <-- REMOVE or COMMENT OUT this line
+    });
+
+    // Close emoji picker when clicking outside or on back button
+    document.addEventListener('click', (event) => {
+      if (
+        emojiPicker.style.display === 'block' &&
+        !emojiPicker.contains(event.target) &&
+        event.target !== emojiButton
+      ) {
+        emojiPicker.style.display = 'none';
+      }
+    });
+
+    // Utility Functions
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function formatTime(ts) {
+      if (!ts) return "";
+      try {
+        const d = typeof ts === "number" ? new Date(ts) : ts.toDate ? ts.toDate() : new Date(ts);
+        if (isNaN(d.getTime())) return "";
+        
+        const now = new Date();
+        const diffMs = now - d;
+        const diffSec = Math.floor(diffMs / 1000);
+        const diffMin = Math.floor(diffSec / 60);
+        const diffHr = Math.floor(diffMin / 60);
+        
+        if (diffHr < 24) {
+          return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+        return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+      } catch (error) {
+        console.error('Error formatting time:', error);
+        return "";
+      }
+    }
+
+    function getOtherUserId(participants) {
+      return participants?.find(uid => uid !== CURRENT_UID) || "Unknown";
+    }
+
+    async function retryOperation(operation, attempts = MAX_RETRY_ATTEMPTS) {
+      for (let i = 0; i < attempts; i++) {
+        try {
+          return await operation();
+        } catch (error) {
+          if (i === attempts - 1) throw error;
+          await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * (i + 1)));
+        }
+      }
+    }
+
+    async function getUsername(userId) {
+      if (!userId) return "Unknown";
+      if (userCache[userId]) return userCache[userId];
+      
+      try {
+        const res = await fetch(`/api/user/profile/${userId}`);
+        if (!res.ok) throw new Error("Not found");
+        const data = await res.json();
+        userCache[userId] = data.username || userId;
+        return userCache[userId];
+      } catch {
+        userCache[userId] = userId;
+        return userId;
+      }
+    }
+
+    async function apiFetch(url, opts = {}) {
+      opts.headers = opts.headers || {};
+      opts.headers["Authorization"] = `Bearer ${ID_TOKEN}`;
+      opts.headers["Content-Type"] = "application/json";
+      const res = await fetch(url, opts);
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(errorText || `Request failed with status ${res.status}`);
+      }
+      return res.json();
+    }
+
+    function showError(container, message, showRetry = true) {
+      container.innerHTML = `
+        <div class="error-message">
+          ${escapeHtml(message)}
+          ${showRetry ? '<button class="retry-btn" onclick="location.reload()">Retry</button>' : ''}
+        </div>
+      `;
+    }
+
+    async function loadChats(pageToken = null) {
+      if (loadingChats) return;
+      loadingChats = true;
+      
+      let url = `${API_BASE}/chats?pageSize=20`;
+      if (pageToken) url += `&pageToken=${pageToken}`;
+      try {
+        const data = await retryOperation(() => apiFetch(url));
+        chats = pageToken ? chats.concat(data.chats || []) : (data.chats || []);
+        chatsNextPage = data.nextPageToken;
+        await renderChatList();
+        // If targetUser param is present, auto-select or create chat
+        if (TARGET_USER_ID && CURRENT_UID) {
+          let chat = chats.find(c => c.participants.some(p => p.uid === TARGET_USER_ID));
+          if (chat) {
+            await selectChat(chat);
+          } else {
+            // No chat exists, set up for new message
+            selectedChat = null;
+            // Get targetUsername from query param
+            const TARGET_USERNAME = getQueryParam('targetUsername');
+            chatHeader.innerHTML = `
+              <span class="chat-avatar" style="display:inline-block;width:32px;height:32px;border-radius:50%;background:#c7d2fe;margin-right:10px;vertical-align:middle;">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;">
+                  <circle cx="16" cy="16" r="16" fill="#e0e7ff"/>
+                  <ellipse cx="16" cy="13" rx="7" ry="7" fill="#6366f1"/>
+                  <ellipse cx="16" cy="25" rx="10" ry="6" fill="#a5b4fc"/>
+                </svg>
+              </span>
+              <span style="vertical-align:middle;">${escapeHtml(TARGET_USERNAME || TARGET_USER_ID)}</span>`;
+            messages = [];
+            messagesDiv.innerHTML = '<div class="no-messages">No messages yet. Start the conversation!</div>';
+          }
+        }
+      } catch (e) {
+        console.error('Error loading chats:', e);
+        showError(chatList, 'Failed to load chats. Please try again.');
+      } finally {
+        loadingChats = false;
+      }
+    }
+
+    async function loadMessages(chat, pageToken = null) {
+      if (!chat) return;
+      if (loadingMessages) return;
+      loadingMessages = true;
+      let url = `${API_BASE}/chats/${chat.chatId}/messages?pageSize=20`;
+      if (pageToken) url += `&pageToken=${pageToken}`;
+      try {
+        const data = await retryOperation(() => apiFetch(url));
+        messages = pageToken ? (data.messages || []).concat(messages) : (data.messages || []);
+        messagesNextPage = data.nextPageToken;
+        await renderMessages();
+      } catch (e) {
+        console.error('Error loading messages:', e);
+        showError(messagesDiv, 'Failed to load messages. Please try again.');
+      } finally {
+        loadingMessages = false;
+      }
+    }
+
+    async function sendMessage(text) {
+      if (!selectedChat) {
+        // No chat exists yet, so create it first
+        const targetUserId = getQueryParam('targetUser');
+        const targetUsername = getQueryParam('targetUsername');
+        const chatType = getQueryParam('type'); // <-- Add this line
+        if (!targetUserId || !targetUsername) {
+          alert("No chat selected and no target user.");
+          return;
+        }
+        sendButton.disabled = true;
+        sendButton.textContent = "Creating chat...";
+        try {
+          // Fetch current user's username
+          let myUsername = null;
+          try {
+            // Use /api/profile for current user (no userId param)
+            const res = await fetch(`${API_PROFILE_BASE}`, { headers: { 'Authorization': `Bearer ${ID_TOKEN}` } });
+            if (res.ok) {
+              const data = await res.json();
+              myUsername = data.username || null;
+            } else {
+              console.warn('Could not fetch current user username, status:', res.status);
+            }
+          } catch (e) { console.warn('Could not fetch current user username', e); }
+          if (!myUsername) {
+            alert('Could not fetch your username.');
+            sendButton.disabled = false;
+            sendButton.textContent = "Send";
+            return;
+          }
+          // Create chat
+          const chatRes = await retryOperation(() => apiFetch(`${API_BASE}/chats`, {
+            method: "POST",
+            body: JSON.stringify({
+              participants: [
+                { uid: CURRENT_UID, username: myUsername },
+                { uid: targetUserId, username: targetUsername }
+              ],
+              type: chatType // <-- Pass the type to the backend
+            })
+          }));
+          // Use chatId returned from API
+          const newChatId = chatRes.chatId;
+          if (!newChatId) throw new Error("Chat creation failed: No chatId returned");
+          // Fetch the new chat details
+          let chat = null;
+          try {
+            const chatDetailRes = await retryOperation(() => apiFetch(`${API_BASE}/chats/${newChatId}`));
+            if (chatDetailRes && chatDetailRes.chat) {
+              chat = { chatId: newChatId, ...chatDetailRes.chat };
+            }
+          } catch (e) {
+            console.warn('Could not fetch new chat details', e);
+          }
+          if (!chat) {
+            // fallback: reload all chats and try to find it
+            await loadChats();
+            chat = chats.find(c => c.chatId === newChatId);
+            if (!chat) throw new Error("Chat creation failed: Chat not found");
+          }
+          selectedChat = chat;
+          await sendMessage(text); // Recursively send message now that chat exists
+        } catch (e) {
+          console.error('Error creating chat:', e);
+          alert("Failed to create chat. Please try again.");
+        } finally {
+          sendButton.disabled = false;
+          sendButton.textContent = "Send";
+        }
+        return;
+      }
+      try {
+        sendButton.disabled = true;
+        sendButton.textContent = "Sending...";
+        let response;
+        try {
+          response = await retryOperation(() => apiFetch(`${API_BASE}/chats/${selectedChat.chatId}/messages`, {
+            method: "POST",
+            body: JSON.stringify({ text })
+          }));
+        } catch (err) {
+          // Try to parse backend error for one-time chat
+          let errorMsg = "";
+          try {
+            // Try to parse JSON error if possible
+            errorMsg = JSON.parse(err.message).error || err.message;
+          } catch {
+            errorMsg = err.message;
+          }
+          if (errorMsg && errorMsg.toLowerCase().includes("one-time chat")) {
+            showConfirmModal({
+              title: "One-Time Chat",
+              message: "You can't send multiple messages to a one-time chat. This chat will be deleted after review.",
+              onConfirm: async () => {
+                await finishOnetimeChat(selectedChat);
+              },
+              onCancel: () => {}
+            });
+            sendButton.textContent = "Send";
+            return;
+          } else {
+            throw err; // rethrow if not a one-time chat error
+          }
+        }
+
+        await loadMessages(selectedChat);
+        messageInput.value = "";
+        messageInput.style.height = 'auto';
+        sendButton.disabled = true;
+      } catch (e) {
+        console.error('Error sending message:', e);
+        alert("Failed to send message. Please try again.");
+      } finally {
+        sendButton.textContent = "Send";
+      }
+    }
+
+    // To confirm finishing reading "onetime" chats
+function showConfirmModal({ title, message, onConfirm, onCancel }) {
+  let modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.innerHTML = `
+    <div class="modal-content" style="background:#fff;padding:24px;border-radius:8px;box-shadow:0 2px 16px rgba(0,0,0,0.15);max-width:340px;margin:60px auto;">
+      <h3 style="margin-top:0;">${escapeHtml(title)}</h3>
+      <div style="margin-bottom:18px;">${escapeHtml(message)}</div>
+      <button id="modalConfirmBtn" style="background:#6366f1;color:#fff;padding:8px 18px;border:none;border-radius:5px;margin-right:10px;">Yes, finish</button>
+      <button id="modalCancelBtn" style="background:#e5e7eb;color:#374151;padding:8px 18px;border:none;border-radius:5px;">No</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  document.getElementById('modalConfirmBtn').onclick = () => {
+    document.body.removeChild(modal);
+    onConfirm && onConfirm();
+  };
+  document.getElementById('modalCancelBtn').onclick = () => {
+    document.body.removeChild(modal);
+    onCancel && onCancel();
+  };
+}
+
+// ---  shows the chat list ---
+async function renderChatList() {
+  if (!chats.length) {
+    chatList.innerHTML = '<div class="no-chat"><span class="empty-icon">🗨️</span> No chats yet. Start a conversation from your dashboard!</div>';
+    return;
+  }
+  let blockedList = [];
+  try {
+    const res = await apiFetch(`${API_MODERATION_BASE}/listBlocked/${CURRENT_UID}`);
+    blockedList = Array.isArray(res.blocked) ? res.blocked : [];
+  } catch (e) {
+    blockedList = [];
+  }
+  chatList.innerHTML = "";
+  for (const chat of chats) {
+    // --- Skip "onetime" chats with status "read" ---
+    if (chat.type === "onetime" && chat.lastMessage?.status === "read") continue;
+    // --- Skip "onetime" chats if you are the sender ---
+    if (
+      chat.type === "onetime" &&
+      chat.lastMessage?.senderId === CURRENT_UID
+    ) continue;
+
+    const otherParticipant = chat.participants.find(p => p.uid !== CURRENT_UID);
+    const otherUid = otherParticipant ? otherParticipant.uid : null;
+    const otherUser = otherParticipant ? otherParticipant.username : "Unknown";
+    const isBlocked = otherUid && blockedList.includes(otherUid);
+    const isUnread = chat.lastMessage?.status === "unread" && chat.lastMessage?.senderId !== CURRENT_UID;
+    const type = chat.type || 'penpal';
+
+    let emoji = "";
+    if (type === "onetime" && isUnread) emoji = "⏳"; // Timer emoji to indicate unread onetime chat
+
+    const div = document.createElement("div");
+    div.className = "chat-item" + (selectedChat?.chatId === chat.chatId ? " active" : "");
+    div.setAttribute('tabindex', '0');
+    div.setAttribute('role', 'button');
+    div.setAttribute('aria-label', `Chat with ${otherUser}`);
+    div.innerHTML = `
+      <div class="chat-user" style="display:flex; align-items:center; gap:6px; overflow:hidden;">
+        <span class="username" style="white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">
+          ${emoji} ${escapeHtml(otherUser)}${isBlocked ? ' (Blocked)' : ''}
+        </span>
+        ${isUnread ? `<span class="unread-dot" style="flex-shrink:0;width:10px;height:10px;border-radius:50%;background:#c084fc;"></span>` : ""}
+      </div>
+    `;
+    div.onclick = () => {
+      // If switching away from a selected "onetime" chat, show modal
+      if (
+        selectedChat &&
+        selectedChat.type === "onetime" &&
+        selectedChat.chatId !== chat.chatId
+      ) {
+        showConfirmModal({
+          title: "Finish Reading?",
+          message: "One time chats are deleted after review. Are you sure you want to finish reading?",
+          onConfirm: async () => {
+            await finishOnetimeChat(selectedChat);
+            selectChat(chat);
+          },
+          onCancel: () => {}
+        });
+      } else {
+        if (!selectedChat || selectedChat.chatId !== chat.chatId) {
+          selectChat(chat);
+        }
+      }
+    };
+    div.onkeydown = (e) => {
+      if (e.key === 'Enter' || e.key === ' ') div.click();
+    };
+    chatList.appendChild(div);
+  }
+  chatList.onscroll = () => {
+    if (chatList.scrollTop + chatList.clientHeight >= chatList.scrollHeight - 10 && chatsNextPage && !loadingChats) {
+      loadChats(chatsNextPage);
+    }
+  };
+}
+
+// --- Add finishOnetimeChat function ---
+async function finishOnetimeChat(chat) {
+  try {
+    // Mark as read or delete (depending on backend API)
+   
+    selectedChat = null;
+    await loadChats();
+    messages = [];
+    messagesDiv.innerHTML = '<div class="no-messages"><span class="empty-icon">💬</span> Select a conversation to view messages</div>';
+    chatHeader.innerHTML = `<span id="chatHeaderText">Select a chat to start messaging</span>`;
+    // Restore typing box
+    chatForm.style.display = "";
+    sendButton.textContent = "Send";
+    sendButton.disabled = true;
+    messageInput.value = "";
+    messageInput.style.height = 'auto';
+  } catch (e) {
+    alert("Failed to finish reading: " + (e.message || e));
+  }
+}
+
+// --- Modify selectChat ---
+async function selectChat(chat) {
+  selectedChat = chat;
+  const localChat = chats.find(c => c.chatId === selectedChat.chatId);
+  if (localChat?.lastMessage) {
+    localChat.lastMessage.status = "read";
+  }
+  messages = [];
+  messagesNextPage = null;
+
+  const otherParticipant = chat.participants.find(p => p.uid !== CURRENT_UID);
+  const otherUid = otherParticipant ? otherParticipant.uid : null;
+  const displayName = otherParticipant ? otherParticipant.username : "Unknown";
+  let isBlocked = false;
+  let isBanned = false;
+
+  // Check if user is blocked
+  try {
+    const res = await apiFetch(`${API_MODERATION_BASE}/listBlocked/${CURRENT_UID}`);
+    isBlocked = Array.isArray(res.blocked) && otherUid && res.blocked.includes(otherUid);
+  } catch (e) {
+    isBlocked = false;
+  }
+
+  // --- Check if user is banned ---
+  if (otherUid) {
+    try {
+      const bannedRes = await apiFetch(`${API_MODERATION_BASE}/isBanned/${otherUid}`);
+      isBanned = bannedRes && bannedRes.banned;
+    } catch (e) {
+      isBanned = false;
+    }
+  }
+
+  // Render header
+  chatHeader.innerHTML = `
+    <button id="backBtn" class="back-btn" aria-label="Back to chat list" style="display:none;">←</button>
+    <span class="chat-avatar" style="display:inline-block;width:32px;height:32px;border-radius:50%;background:#c7d2fe;margin-right:10px;vertical-align:middle;">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;">
+        <circle cx="16" cy="16" r="16" fill="#e0e7ff"/>
+        <ellipse cx="16" cy="13" rx="7" ry="7" fill="#6366f1"/>
+        <ellipse cx="16" cy="25" rx="10" ry="6" fill="#a5b4fc"/>
+      </svg>
+    </span>
+    <span style="vertical-align:middle; color:${isBlocked ? '#ef4444' : isBanned ? '#b91c1c' : 'inherit'}; font-weight:${isBlocked || isBanned ? '600' : 'inherit'};">
+      ${escapeHtml(displayName)}
+      ${isBlocked ? ' <span style="color:#ef4444;font-weight:600">(Blocked)</span>' : ''}
+      ${isBanned ? ' <span style="color:#b91c1c;font-weight:600">(Banned)</span>' : ''}
+    </span>
+    <button id="blockUserBtn" style="margin-left:16px;padding:7px 18px;background:${isBlocked ? '#f3f4f6' : '#ef4444'};color:${isBlocked ? '#ef4444' : '#fff'};border:none;border-radius:5px;cursor:pointer;float:right;min-width:90px;">${isBlocked ? 'Unblock' : 'Block'}</button>
+  `;
+
+  // Attach block/unblock logic to the single button
+  const blockBtn = document.getElementById('blockUserBtn');
+  if (blockBtn) blockBtn.onclick = async () => {
+    if (!otherUid) return;
+    try {
+      if (isBlocked) {
+        await apiFetch(`${API_MODERATION_BASE}/unblock`, { method: 'POST', body: JSON.stringify({ uid: CURRENT_UID, targetUid: otherUid }) });
+      } else {
+        await apiFetch(`${API_MODERATION_BASE}/block`, { method: 'POST', body: JSON.stringify({ uid: CURRENT_UID, targetUid: otherUid }) });
+      }
+      await selectChat(chat); // re-render
+    } catch (err) {
+      alert('Failed to update block status: ' + err);
+    }
+  };
+
+  // --- Disable send button if banned ---
+  if (isBanned) {
+    sendButton.disabled = true;
+    chatForm.disabled = true;
+  // Prevent any form submission
+    chatForm.onsubmit = (e) => e.preventDefault();
+    sendButton.onclick = (e) => e.preventDefault();
+    sendButton.textContent = "User is banned";
+    sendButton.style.background = "#b91c1c";
+    sendButton.style.color = "#fff";
+    messagesDiv.innerHTML = '<div class="no-messages" style="color:#b91c1c;font-weight:600"><span class="empty-icon">🚫</span> This user has been banned. You cannot send messages.</div>';
+    return;
+  }
+
+  // Update send button if blocked
+  sendButton.textContent = isBlocked ? 'Unblock' : 'Send';
+  // Ensure the form and button are re-enabled for non-banned chats
+  sendButton.disabled = false;
+  chatForm.disabled = false;
+  // Restore the form submit handler (same behavior as the global handler)
+  chatForm.onsubmit = async e => {
+    e.preventDefault();
+    const text = messageInput.value.trim();
+    if (!text) return;
+    await sendMessage(text);
+  };
+  // Reset any button inline styles applied for the banned state
+  sendButton.style.background = '';
+  sendButton.style.color = '';
+  sendButton.onclick = null;
+
+  if (isBlocked) {
+    sendButton.onclick = async (e) => {
+      e.preventDefault();
+      if (!otherUid) return;
+      try {
+        await apiFetch(`${API_MODERATION_BASE}/unblock`, { method: 'POST', body: JSON.stringify({ uid: CURRENT_UID, targetUid: otherUid }) });
+        await selectChat(chat); // re-render
+      } catch (err) {
+        alert('Failed to unblock user.');
+      }
+    };
+  }
+  await renderChatList();
+  await loadMessages(chat);
+}
+
+
+
+    async function renderMessages() {
+      // Check if blocked
+      let isBlocked = false;
+      if (selectedChat) {
+        const otherParticipant = selectedChat.participants.find(p => p.uid !== CURRENT_UID);
+        const otherUid = otherParticipant ? otherParticipant.uid : null;
+        try {
+          const res = await apiFetch(`${API_MODERATION_BASE}/listBlocked/${CURRENT_UID}`);
+          isBlocked = Array.isArray(res.blocked) && otherUid && res.blocked.includes(otherUid);
+        } catch (e) {
+          isBlocked = false;
+        }
+      }
+      if (!messages.length || isBlocked) {
+        messagesDiv.innerHTML = isBlocked
+          ? '<div class="no-messages" style="color:#ef4444;font-weight:600"><span class="empty-icon">🚫</span> You have blocked this user. Unblock to view messages.</div>'
+          : '<div class="no-messages"><span class="empty-icon">💬</span> No messages yet. Start the conversation!</div>';
+        return;
+      }
+      const shouldScrollToBottom = messagesDiv.scrollTop + messagesDiv.clientHeight >= messagesDiv.scrollHeight - 100;
+      messagesDiv.innerHTML = "";
+      for (const msg of messages) {
+        const div = document.createElement("div");
+        const isOtherUser = msg.senderId !== CURRENT_UID;
+        div.className = "message" + (msg.senderId === CURRENT_UID ? " me" : "");
+        div.innerHTML = `
+          <div class="message-text">${escapeHtml(msg.text)}</div>
+          <div class="timestamp">${formatTime(msg.timestamp)}</div>
+        `;
+        if (isOtherUser) {
+          div.style.cursor = 'pointer';
+          div.title = 'Click to flag this message';
+          div.onclick = () => {
+            import('../src/frontend/scripts/chatModal.js').then(({ showModal }) => {
+              let reason = '';
+              showModal({
+                title: 'Flag Message',
+                content: `<div style='margin-bottom:8px;'>Flag this message as inappropriate?</div><div style='background:#f3f4f6;padding:8px;border-radius:5px;margin-bottom:10px;'>${escapeHtml(msg.text)}</div><textarea id='flag-reason' placeholder='Reason (optional)' style='width:100%;min-height:48px;resize:vertical;'></textarea>`,
+                confirmText: 'Flag',
+                cancelText: 'Cancel',
+                onConfirm: async () => {
+                  const textarea = document.getElementById('flag-reason');
+                  reason = textarea ? textarea.value.trim() : '';
+                  try {
+                    const otherParticipant = selectedChat.participants.find(p => p.uid !== CURRENT_UID);
+                    const reportedUid = otherParticipant ? otherParticipant.uid : null;
+                    const reportedUsername = otherParticipant ? otherParticipant.username : null;
+                    // Use current user's username from selectedChat or userCache
+                    let reporterUsername = null;
+                    if (selectedChat && Array.isArray(selectedChat.participants)) {
+                      const me = selectedChat.participants.find(p => p.uid === CURRENT_UID);
+                      reporterUsername = me && me.username ? me.username : null;
+                    }
+                    if (!reporterUsername && userCache && userCache[CURRENT_UID]) {
+                      reporterUsername = userCache[CURRENT_UID];
+                    }
+                    const response = await fetch('${API_MODERATION_BASE}/report', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${ID_TOKEN}`
+                      },
+                      body: JSON.stringify({
+                        reporterUid: CURRENT_UID,
+                        reporterUsername,
+                        reportedUid,
+                        reportedUsername,
+                        flaggedMessage: msg.text,
+                        reason,
+                        messageId: msg.id
+                      })
+                    });
+                    if (response.status === 409) {
+                      alert('This message has already been reported.');
+                      return;
+                    }
+                    if (!response.ok) {
+                      const data = await response.json().catch(() => ({}));
+                      throw new Error(data.error || 'Failed to flag user');
+                    }
+                    alert('User reported');
+                  } catch (err) {
+                    alert('Failed to flag user ' + (err.message || err));
+                  }
+                }
+              });
+            });
+          };
+        }
+        messagesDiv.appendChild(div);
+        div.classList.add('fade-in');
+      }
+      if (shouldScrollToBottom) {
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      }
+    }
+
+    chatForm.onsubmit = async e => {
+  e.preventDefault();
+  const text = messageInput.value.trim();
+  if (!text) return;
+  await sendMessage(text);
+    };
+
+    messagesDiv.onscroll = () => {
+      if (messagesDiv.scrollTop < 40 && messagesNextPage && !loadingMessages) {
+        const oldHeight = messagesDiv.scrollHeight;
+        loadMessages(selectedChat, messagesNextPage).then(() => {
+          const newHeight = messagesDiv.scrollHeight;
+          messagesDiv.scrollTop = newHeight - oldHeight;
+        });
+      }
+    };
+
+    async function startChatApp(user) {
+      CURRENT_UID = user.uid;
+      try {
+        // Get initial token
+        const token = await user.getIdToken();
+        ID_TOKEN = token;
+        await loadChats();
+
+        // Set up token refresh listener
+        observeToken(async (user) => {
+          if (user) {
+            const newToken = await user.getIdToken();
+            if (newToken !== ID_TOKEN) {
+              console.log('Token refreshed');
+              ID_TOKEN = newToken;
+            }
+          }
+        });
+      } catch (error) {
+        console.error('Error starting chat app:', error);
+        showError(chatList, 'Failed to initialize chat. Please refresh the page.');
+      }
+    }
+
+    observeUser(async user => {
+      if (!user) {
+        alert("You must be logged in to use chat. Redirecting to login...");
+        window.location.href = "/pages/login.html";
+      } else {
+        await startChatApp(user);
+        // Ensure send button state is correct on load
+        sendButton.disabled = !messageInput.value.trim();
+      }
+    });
+    // Import modal utility for flagging
+    import("../src/frontend/scripts/chatModal.js");
+  </script>
+</body>
+</html>
