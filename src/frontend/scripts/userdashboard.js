@@ -96,8 +96,8 @@ import { onAuthStateChanged } from "firebase/auth";
                             ? user.languages.map(l => escapeHtml(l)).join(', ') 
                             : 'N/A';
                         const _g = (user?.gender || '').toString().trim().toLowerCase();
-                        const genderAvatar = (_g === 'female' || _g === 'f') ? 'images/female.png' : (_g === 'male' || _g === 'm') ? 'images/male1.png' : (_g === 'non-binary' || _g === 'nonbinary' || _g === 'nb' || _g === 'non' || _g === 'n') ? 'images/nonb.png' : null;
-                        const avatar = user?.avatarUrl || genderAvatar || '/src/frontend/images/default-avatar.png';
+                        const genderAvatar = (_g === 'female' || _g === 'f') ? '/images/female.png' : (_g === 'male' || _g === 'm') ? '/images/male1.png' : (_g === 'non-binary' || _g === 'nonbinary' || _g === 'nb' || _g === 'non' || _g === 'n') ? '/images/nonb.png' : null;
+                        const avatar = user?.avatarUrl || genderAvatar || '/images/default-avatar.png';
 
                         card.innerHTML = `
                             <div style="display:flex;align-items:center;gap:12px;">
@@ -174,8 +174,8 @@ import { onAuthStateChanged } from "firebase/auth";
                                                 const username = escapeHtml(p?.username || 'Unknown User');
                                                 const bio = escapeHtml(p?.bio || '');
                                                 const _pg = (p?.gender || '').toString().trim().toLowerCase();
-                                                const genderAvatar = (_pg === 'female' || _pg === 'f') ? 'images/female.png' : (_pg === 'male' || _pg === 'm') ? 'images/male1.png' : (_pg === 'non-binary' || _pg === 'nonbinary' || _pg === 'nb' || _pg === 'non' || _pg === 'n') ? 'images/nonb.png' : null;
-                                                const avatar = p?.avatarUrl || genderAvatar || '/src/frontend/images/default-avatar.png';
+                                                const genderAvatar = (_pg === 'female' || _pg === 'f') ? '/images/female.png' : (_pg === 'male' || _pg === 'm') ? '/images/male1.png' : (_pg === 'non-binary' || _pg === 'nonbinary' || _pg === 'nb' || _pg === 'non' || _pg === 'n') ? '/images/nonb.png' : null;
+                                                const avatar = p?.avatarUrl || genderAvatar || '/images/default-avatar.png';
 
                                                 card.innerHTML = `
                                                         <div style="display:flex;align-items:center;gap:10px;">
@@ -221,8 +221,8 @@ import { onAuthStateChanged } from "firebase/auth";
                 const bioEl = document.getElementById('displayBio');
                 // Prefer explicit avatarUrl; fall back to gender-based image, then to default
                 const _pgender = (profile?.gender || '').toString().trim().toLowerCase();
-                const genderAvatar = (_pgender === 'female' || _pgender === 'f') ? 'images/female.png' : (_pgender === 'male' || _pgender === 'm') ? 'images/male1.png' : (_pgender === 'non-binary' || _pgender === 'nonbinary' || _pgender === 'nb' || _pgender === 'non' || _pgender === 'n') ? 'images/nonb.png' : null;
-                if (avatarEl) avatarEl.src = profile.avatarUrl || genderAvatar || '/src/frontend/images/default-avatar.png';
+                const genderAvatar = (_pgender === 'female' || _pgender === 'f') ? '/images/female.png' : (_pgender === 'male' || _pgender === 'm') ? '/images/male1.png' : (_pgender === 'non-binary' || _pgender === 'nonbinary' || _pgender === 'nb' || _pgender === 'non' || _pgender === 'n') ? '/images/nonb.png' : null;
+                if (avatarEl) avatarEl.src = profile.avatarUrl || genderAvatar || '/images/default-avatar.png';
                 if (usernameEl) usernameEl.textContent = profile.username || profile.displayName || 'You';
                 if (regionEl) regionEl.textContent = profile.region || '';
                 if (bioEl) bioEl.textContent = profile.bio || '';
