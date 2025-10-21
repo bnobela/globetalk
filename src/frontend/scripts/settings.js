@@ -5,7 +5,7 @@ import {
 } from "../../services/firebase.js";
 
 
-const BACKEND_PROFILE_URL = "https://binarybandits-profileapi.onrender.com/api/profile";
+const BACKEND_PROFILE_URL = "https://globetalk-profile-api-ne99.onrender.com/api/profile";
 
 // Reference to form and username text
 const formElement = document.getElementById("settingsForm");

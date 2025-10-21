@@ -9,7 +9,7 @@ import { onAuthStateChanged } from "firebase/auth";
             </svg>
         `;
 
-        const BACKEND_PROFILE_URL = "https://binarybandits-profileapi.onrender.com/api/profile";
+        const BACKEND_PROFILE_URL = "https://globetalk-profile-api-ne99.onrender.com/api/profile";
 
         const ERROR_MESSAGES = {
             NO_USER_ID: 'Error: No userId provided in the URL.',

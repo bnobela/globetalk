@@ -5,7 +5,7 @@ import { onAuthStateChanged } from "firebase/auth";
         const MAX_RETRY_ATTEMPTS = 3;
         const RETRY_DELAY = 1000;
         const AUTH_TIMEOUT = 10000;
-        const BACKEND_PROFILE_URL = "https://binarybandits-profileapi.onrender.com/api/profile";
+        const BACKEND_PROFILE_URL = "https://globetalk-profile-api-ne99.onrender.com/api/profile";
 
         // Utility function to format time
         function formatTimeAgo(date) {

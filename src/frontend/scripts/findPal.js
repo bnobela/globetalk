@@ -11,7 +11,7 @@ const CONFIG = {
     MAX_RETRIES: 3,
     RETRY_DELAY: 1000,
     BACKEND_URL: 'https://binarybandits-matchapi.onrender.com/api/match',
-    BACKEND_PROFILE_URL: 'https://binarybandits-profileapi.onrender.com/api/profile'
+    BACKEND_PROFILE_URL: 'https://globetalk-profile-api-ne99.onrender.com/api/profile'
 };
 
 // Utility: Delay function for retries

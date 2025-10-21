@@ -176,7 +176,7 @@ import { observeUser } from "../../services/firebase.js";
 document.addEventListener("DOMContentLoaded", languageList);
 
 
-const BACKEND_PROFILE_URL = "https://binarybandits-profileapi.onrender.com/api/profile";
+const BACKEND_PROFILE_URL = "https://globetalk-profile-api-ne99.onrender.com/api/profile";
 // ------------------ REGION DATA ------------------
 const regions = [
   "Africa (Central)", "Africa (Eastern)", "Africa (Southern)", "Africa (Western)",
