@@ -58,9 +58,9 @@
   <script type="module">
     import { observeUser, observeToken } from "../src/services/firebase.js";
 
-    const API_BASE = "/api/chat";
+    const API_BASE = "https://globetalkk-api.onrender.com/api/chat";
     const API_PROFILE_BASE = "https://binarybandits-profileapi.onrender.com/api/profile";
-    const API_MODERATION_BASE = "https://binarybandits-moderationapi.onrender.com/api/moderation";
+    const API_MODERATION_BASE = "https://globetalk-moderation-api.onrender.com/api/moderation/";
     const chatList = document.getElementById("chatList");
     const messagesDiv = document.getElementById("messages");
     const chatHeader = document.getElementById("chatHeader");
@@ -705,7 +705,7 @@ async function selectChat(chat) {
                     if (!reporterUsername && userCache && userCache[CURRENT_UID]) {
                       reporterUsername = userCache[CURRENT_UID];
                     }
-                    const response = await fetch('${API_MODERATION_BASE}/report', {
+                    const response = await fetch(`${API_MODERATION_BASE}report`, {
                       method: 'POST',
                       headers: {
                         'Content-Type': 'application/json',

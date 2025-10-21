@@ -1,15 +1,15 @@
-import { signInWithGoogle, observeUser } from "../../services/firebase.js";
-import { isBannedUser, isAdmin } from "../../services/admin.js"; 
+import { signInWithGoogle, observeUser } from "@services/firebase.js";
+import { isBannedUser, isAdmin } from "@services/admin.js"; 
 
 // Constants and Configuration
 const CONFIG = {
-  AUTH_API_URL: 'https://binarybandits-auth.onrender.com/',
-  MODERATION_API_URL: 'https://binarybandits-moderationapi.onrender.com/',
+  AUTH_API_URL: 'https://globetalk-auth-api.onrender.com/',
+  MODERATION_API_URL: 'https://globetalk-moderation-api.onrender.com/api/moderation/',
   PAGES: {
-    LOGIN: '../../../pages/login.html',
-    DASHBOARD: '../../../pages/userdashboard.html',
-    ONBOARDING: '../../../pages/onboarding.html',
-    ADMIN_DASHBOARD: '../../../pages/admin.html' 
+    LOGIN: './login.html',
+    DASHBOARD: './userdashboard.html',
+    ONBOARDING: './onboarding.html',
+    ADMIN_DASHBOARD: './admin.html' 
   },
   STORAGE_KEYS: {
     ID_TOKEN: 'idToken',
@@ -71,27 +71,29 @@ const utils = {
     return userId.trim();
   },
 
-  async safeNavigate(url, loadingElement = null) {
-    try {
-      if (loadingElement) {
-        loadingElement.style.display = 'block';
-      }
-      
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      if (!url || !url.startsWith('../')) {
-        throw new Error('Invalid navigation URL');
-      }
-      
+async safeNavigate(url, loadingElement = null) {
+  try {
+    if (!url) throw new Error('Navigation URL missing');
+
+    if (loadingElement) loadingElement.style.display = 'block';
+
+    // Let loaders render
+    await new Promise(resolve => setTimeout(resolve, 150));
+
+    // ✅ Relaxed navigation — accepts absolute, relative, or external URLs
+    if (typeof url === 'string') {
       window.location.href = url;
-    } catch (error) {
-      console.error('Navigation error:', error);
-      if (loadingElement) {
-        loadingElement.style.display = 'none';
-      }
-      throw new AuthError('Navigation failed', 'NAVIGATION_ERROR', { url });
+    } else {
+      console.warn('safeNavigate called with non-string URL:', url);
     }
-  },
+
+  } catch (error) {
+    console.error('Navigation error:', error);
+    if (loadingElement) loadingElement.style.display = 'none';
+    throw new Error(`Navigation failed: ${error.message}`);
+  }
+},
+
 
   retryOperation: async function retryOperation(operation, maxAttempts = CONFIG.RETRY_CONFIG.MAX_ATTEMPTS) {
     let lastError;
@@ -143,6 +145,7 @@ async function checkIfUserExists(userId) {
       try {
         const response = await fetch(`${CONFIG.AUTH_API_URL}api/users/${sanitizedUserId}/exists`, {
           method: 'GET',
+          creditentials: 'include',
           headers: {
             "Authorization": `Bearer ${token}`,
             "Content-Type": "application/json"
