@@ -1,7 +1,7 @@
 import { auth, logout } from '../../services/firebase.js';
 import { onAuthStateChanged } from "firebase/auth";
 
-const BACKEND_URL = "https://binarybandits-matchmakingapi.onrender.com/api/match";
+const BACKEND_URL = "https://globetalk-matchmaking-api.onrender.com/api/match";
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
 
