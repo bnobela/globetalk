@@ -23,14 +23,36 @@
     <section class="settings">
       <div class="settings-header">
         <h1>Settings and Safety</h1>
+        <!-- removed the simple link row here — policy cards are shown inside the settings box -->
       </div>
 
       <div class="settings-box">
         <div class="user-info">
           <p><strong id="username">Loading...</strong></p>
         </div>
-        <hr />
 
+        <!-- policy card row integrated into the settings box -->
+        <div class="policy-cards" aria-hidden="false">
+          <a class="policy-card" href="https://bonganenobela.github.io/mygitactions/GlobeTalk_Privacy_Policy/" target="_blank" rel="noopener">
+            <div class="policy-icon">📜</div>
+            <div class="policy-body">
+              <div class="policy-title">Privacy Policy</div>
+              <div class="policy-desc">How we collect, use and protect your data. Read our privacy commitments.</div>
+            </div>
+            <div class="policy-chevron">→</div>
+          </a>
+
+          <a class="policy-card" href="https://bonganenobela.github.io/mygitactions/Terms_Of_Service/" target="_blank" rel="noopener">
+            <div class="policy-icon">📋</div>
+            <div class="policy-body">
+              <div class="policy-title">Terms of Service</div>
+              <div class="policy-desc">Rules and guidelines for using GlobeTalk.</div>
+            </div>
+            <div class="policy-chevron">→</div>
+          </a>
+        </div>
+
+        <hr />
         <h3>Profile Information</h3>
         <form id="settingsForm">
           <!-- Profile Information -->
